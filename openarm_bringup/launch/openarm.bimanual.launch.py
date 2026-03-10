@@ -20,6 +20,7 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription, LaunchContext
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler, TimerAction, OpaqueFunction
+from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
 from launch.substitutions import (
     LaunchConfiguration,
@@ -189,6 +190,11 @@ def generate_launch_description():
             default_value="openarm_v10_bimanual_controllers.yaml",
             description="Controllers file(s) to use. Can be a single file or comma-separated list of files.",
         ),
+        DeclareLaunchArgument(
+            "start_rviz",
+            default_value="true",
+            description="Start RViz node for visualization.",
+        ),
     ]
 
     # Initialize launch configurations
@@ -202,6 +208,7 @@ def generate_launch_description():
     rightcan_interface = LaunchConfiguration("right_can_interface")
     left_can_interface = LaunchConfiguration("left_can_interface")
     arm_prefix = LaunchConfiguration("arm_prefix")
+    start_rviz = LaunchConfiguration("start_rviz")
 
     controllers_file = PathJoinSubstitution(
         [FindPackageShare(runtime_config_package), "config",
@@ -225,6 +232,7 @@ def generate_launch_description():
         name="rviz2",
         output="log",
         arguments=["-d", rviz_config_file],
+        condition=IfCondition(start_rviz),
     )
 
     # Joint state broadcaster spawner

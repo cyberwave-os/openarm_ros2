@@ -108,8 +108,8 @@ class OpenArm_v10HW : public hardware_interface::SystemInterface {
   const double GRIPPER_JOINT_1_POSITION = 0.0;
   const double GRIPPER_MOTOR_0_RADIANS = 0.0;
   const double GRIPPER_MOTOR_1_RADIANS = -1.0472;
-  const double GRIPPER_KP = 5.0;
-  const double GRIPPER_KD = 0.1;
+  const double GRIPPER_KP = 30.0;  // Increased from 5.0 - needed for gripper to move
+  const double GRIPPER_KD = 1.0;   // Increased from 0.1 - better damping
 
   // Configuration
   std::string can_interface_;
