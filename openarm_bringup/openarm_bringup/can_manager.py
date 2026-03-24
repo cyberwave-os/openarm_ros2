@@ -26,7 +26,7 @@ Usage:
     from openarm_bringup.can_manager import CANManager
     
     # Create manager
-    can_mgr = CANManager(left_can="can1", right_can="can0")
+    can_mgr = CANManager(left_can="can3", right_can="can2")
     
     # Setup CAN interfaces
     can_mgr.setup_interfaces()
@@ -69,8 +69,8 @@ class CANManager:
     
     def __init__(
         self,
-        left_can: str = "can1",
-        right_can: str = "can0",
+        left_can: str = "can3",
+        right_can: str = "can2",
         bitrate: int = DEFAULT_BITRATE,
         dbitrate: int = DEFAULT_DBITRATE,
         fd_enabled: bool = DEFAULT_FD_ENABLED,
@@ -81,8 +81,8 @@ class CANManager:
         Initialize CAN Manager.
         
         Args:
-            left_can: CAN interface for left arm (default: can1)
-            right_can: CAN interface for right arm (default: can0)
+            left_can: CAN interface for left arm (default: can3)
+            right_can: CAN interface for right arm (default: can2)
             bitrate: CAN nominal bitrate (default: 1000000)
             dbitrate: CAN-FD data bitrate (default: 5000000)
             fd_enabled: Enable CAN-FD mode (default: True)
@@ -192,7 +192,7 @@ class CANManager:
                 print(f"[CAN Manager]   {result.stderr.strip()}")
             return False
         
-        print(f"[CAN Manager] ✅ {iface} configured (bitrate={self.bitrate}, dbitrate={self.dbitrate}, fd={'on' if self.fd_enabled else 'off'})")
+        print(f"[CAN Manager] ✓ {iface} configured (bitrate={self.bitrate}, dbitrate={self.dbitrate}, fd={'on' if self.fd_enabled else 'off'})")
         return True
     
     def setup_interfaces(self) -> bool:
@@ -215,18 +215,18 @@ class CANManager:
         
         for iface in self.interfaces:
             if not self._interface_exists(iface):
-                print(f"[CAN Manager] ⚠️  Interface {iface} not found")
+                print(f"[CAN Manager] [WARN]  Interface {iface} not found")
                 continue
             
             if self._interface_is_up(iface):
                 already_up.append(iface)
-                print(f"[CAN Manager] ✅ {iface} already UP - skipping configuration")
+                print(f"[CAN Manager] ✓ {iface} already UP - skipping configuration")
             else:
                 need_config.append(iface)
         
         # If all interfaces are already up, we're done
         if already_up and not need_config:
-            print(f"[CAN Manager] ✅ All {len(already_up)} interfaces already configured")
+            print(f"[CAN Manager] ✓ All {len(already_up)} interfaces already configured")
             print("="*60 + "\n")
             self._interfaces_configured = True
             return True
@@ -234,7 +234,7 @@ class CANManager:
         # Try to configure interfaces that need it
         if need_config:
             if os.geteuid() != 0:
-                print(f"[CAN Manager] ⚠️  Not running as root - attempting sudo for {need_config}")
+                print(f"[CAN Manager] [WARN]  Not running as root - attempting sudo for {need_config}")
                 print("[CAN Manager]   If this fails, either:")
                 print("[CAN Manager]   1. Run with: sudo ros2 launch ...")
                 print("[CAN Manager]   2. Start CAN first: sudo systemctl start openarm-can-setup.service")
@@ -246,15 +246,15 @@ class CANManager:
                     success_count += 1
             
             if success_count > 0:
-                print(f"[CAN Manager] ✅ Configured {success_count}/{len(need_config)} interfaces")
+                print(f"[CAN Manager] ✓ Configured {success_count}/{len(need_config)} interfaces")
         
         total_available = len(already_up) + (success_count if need_config else 0)
         self._interfaces_configured = total_available > 0
         
         if self._interfaces_configured:
-            print(f"[CAN Manager] ✅ {total_available} interface(s) available")
+            print(f"[CAN Manager] ✓ {total_available} interface(s) available")
         else:
-            print("[CAN Manager] ❌ No interfaces available!")
+            print("[CAN Manager] ✗ No interfaces available!")
             print("[CAN Manager]   Run: sudo systemctl start openarm-can-setup.service")
         
         print("="*60 + "\n")
@@ -317,7 +317,7 @@ class CANManager:
             print(f"[CAN Manager]   Sent disable to {count} motors")
         
         self._motors_enabled = False
-        print("[CAN Manager] ✅ All motor disable commands sent")
+        print("[CAN Manager] ✓ All motor disable commands sent")
         print("="*60 + "\n")
     
     def bring_down_interface(self, iface: str) -> bool:
@@ -333,9 +333,9 @@ class CANManager:
         print("[CAN Manager] Bringing down CAN interfaces...")
         for iface in self.interfaces:
             if self.bring_down_interface(iface):
-                print(f"[CAN Manager]   ✅ {iface} down")
+                print(f"[CAN Manager]   ✓ {iface} down")
             else:
-                print(f"[CAN Manager]   ⚠️  {iface} not found or already down")
+                print(f"[CAN Manager]   [WARN]  {iface} not found or already down")
         
         self._interfaces_configured = False
     
@@ -359,7 +359,7 @@ class CANManager:
         # Step 2: Bring down interfaces
         self.bring_down_interfaces()
         
-        print("[CAN Manager] ✅ Shutdown complete")
+        print("[CAN Manager] ✓ Shutdown complete")
         print("="*60 + "\n")
     
     def _register_shutdown_handlers(self) -> None:
@@ -391,8 +391,8 @@ _global_can_manager: Optional[CANManager] = None
 
 
 def get_can_manager(
-    left_can: str = "can1",
-    right_can: str = "can0",
+    left_can: str = "can3",
+    right_can: str = "can2",
     **kwargs
 ) -> CANManager:
     """
@@ -413,8 +413,8 @@ def get_can_manager(
 
 
 def setup_can_for_launch(
-    left_can: str = "can1",
-    right_can: str = "can0",
+    left_can: str = "can3",
+    right_can: str = "can2",
     bitrate: int = CANManager.DEFAULT_BITRATE,
     dbitrate: int = CANManager.DEFAULT_DBITRATE,
     fd_enabled: bool = True,
@@ -450,8 +450,8 @@ if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(description="OpenArm CAN Manager")
-    parser.add_argument("--left-can", default="can1", help="Left arm CAN interface")
-    parser.add_argument("--right-can", default="can0", help="Right arm CAN interface")
+    parser.add_argument("--left-can", default="can3", help="Left arm CAN interface")
+    parser.add_argument("--right-can", default="can2", help="Right arm CAN interface")
     parser.add_argument("--setup", action="store_true", help="Setup CAN interfaces")
     parser.add_argument("--shutdown", action="store_true", help="Shutdown (disable motors, bring down CAN)")
     parser.add_argument("--disable-motors", action="store_true", help="Only disable motors")

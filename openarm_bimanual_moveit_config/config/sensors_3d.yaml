@@ -1,3 +1,5 @@
+# This file is used to configure the 3D sensors for the robot.
+# It is a placeholder for now. Configure the sensors to use the correct topics and parameters.
 # No 3D sensors are configured for this robot.
 # The OpenArm does not have a depth camera / Kinect sensor.
 # Leaving the sensors list empty disables octomap collision avoidance from
