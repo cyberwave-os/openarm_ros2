@@ -650,41 +650,6 @@ def launch_setup(context: LaunchContext, *args, **kwargs):
         )
         mqtt_nodes.append(mqtt_bridge_node)
 
-        # Add diagnostic publisher to monitor motor health
-        diagnostic_publisher_node = Node(
-            package="openarm_cyberwave",
-            executable="openarm_diagnostic_publisher.py",
-            name="openarm_diagnostic_publisher",
-            output="screen",
-            parameters=[
-                {
-                    "publish_rate": publish_rate,
-                    "arm_prefix_left": "left_",
-                    "arm_prefix_right": "right_",
-                    "velocity_warn_threshold": velocity_warn_threshold,
-                    "torque_warn_threshold": torque_warn_threshold,
-                },
-            ],
-        )
-        mqtt_nodes.append(diagnostic_publisher_node)
-        
-        # Add trajectory aggregator to combine left/right controller data (always enabled)
-        trajectory_aggregator_node = Node(
-            package="openarm_cyberwave",
-            executable="openarm_trajectory_aggregator.py",
-            name="openarm_trajectory_aggregator",
-            output="screen",
-            parameters=[
-                {
-                    "robot_id": robot_id,
-                    "twin_uuid": twin_uuid_param,
-                    "publish_rate": publish_rate,
-                },
-            ],
-            additional_env={'CYBERWAVE_API_KEY': cyberwave_token},
-        )
-        mqtt_nodes.append(trajectory_aggregator_node)
-        
         # Add Cartesian pose publisher for end-effector and base poses
         cartesian_pose_publisher_node = Node(
             package="openarm_cyberwave",

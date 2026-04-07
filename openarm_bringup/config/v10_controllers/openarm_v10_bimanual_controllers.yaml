@@ -20,6 +20,9 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
+    left_forward_position_controller:
+      type: forward_command_controller/ForwardCommandController
+
     left_forward_velocity_controller:
       type: forward_command_controller/ForwardCommandController
 
