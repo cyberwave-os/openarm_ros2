@@ -650,30 +650,6 @@ def launch_setup(context: LaunchContext, *args, **kwargs):
         )
         mqtt_nodes.append(mqtt_bridge_node)
 
-        # Add Cartesian pose publisher for end-effector and base poses
-        cartesian_pose_publisher_node = Node(
-            package="openarm_cyberwave",
-            executable="openarm_cartesian_pose_publisher.py",
-            name="openarm_cartesian_pose_publisher",
-            output="screen",
-            parameters=[
-                {
-                    "publish_rate": publish_rate,
-                    "cartesian_pose_rate": publish_rate,
-                    "robot_id": robot_id,
-                    "twin_uuid": twin_uuid_param,
-                    "base_frame": "world",
-                    "left_ee_frame": "openarm_left_hand_tcp",
-                    "right_ee_frame": "openarm_right_hand_tcp",
-                    "torso_frame": "openarm_body_link0",
-                    "velocity_warn_threshold": velocity_warn_threshold,
-                    "torque_warn_threshold": torque_warn_threshold,
-                },
-            ],
-            additional_env={'CYBERWAVE_API_KEY': cyberwave_token},
-        )
-        mqtt_nodes.append(cartesian_pose_publisher_node)
-        
         # Note: MoveIt2 plugin runs INSIDE mqtt_bridge_node when
         # motion_controller.type="moveit" is set in the mapping config.
         # No separate node needed!
